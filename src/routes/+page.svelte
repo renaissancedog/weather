@@ -8,7 +8,7 @@
   const apiKey = '4d8fb5b93d4af21d66a2948710284366';
   async function click() {
     const geo =
-      'http://api.openweathermap.org/geo/1.0/direct?q=' +
+      'https://api.openweathermap.org/geo/1.0/direct?q=' +
       name +
       '&appid=' +
       apiKey;
