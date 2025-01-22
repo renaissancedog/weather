@@ -1,5 +1,8 @@
 <script>
-  let name, weatherData;
+  import dayjs from 'dayjs';
+  import utc from 'dayjs/plugin/utc';
+  dayjs.extend(utc);
+  let name, weatherData, date;
   let desc, temp, feelsLike, humid, wind, clouds, icon, cityName;
   let show = false;
   const apiKey = '4d8fb5b93d4af21d66a2948710284366';
@@ -28,18 +31,22 @@
       .then((response) => response.json())
       .then((data) => {
         weatherData = data;
-        console.log(weatherData);
         temp = Math.round(weatherData.main.temp) + '°F';
         feelsLike =
           'Feels like ' + Math.round(weatherData.main.feels_like) + '°F';
         humid = weatherData.main.humidity + '% humidity';
         desc = weatherData.weather[0].description;
-        icon = "https://openweathermap.org/img/wn/"+weatherData.weather[0].icon + '@2x.png';
+        icon =
+          'https://openweathermap.org/img/wn/' +
+          weatherData.weather[0].icon +
+          '@2x.png';
         wind = Math.round(weatherData.wind.speed) + ' mph wind';
         clouds = weatherData.clouds.all + '% cloudy';
         cityName = weatherData.name + ', ' + weatherData.sys.country;
-        let date = new Date((weatherData.dt+weatherData.timezone) * 1000);
-        console.log(date.getDate());
+        date = dayjs(weatherData.dt * 1000, 'x')
+          .utc()
+          .add(weatherData.timezone, 's')
+          .format('MMMM D, HH:mm');
         show = true;
       });
   }
@@ -58,11 +65,13 @@
       >Submit</button
     >
     <div class="flex flex-col bg-white p-4">
-      <p></p>
+      {#if show}
+        <h3 class="pt-2">{date}</h3>
+      {/if}
       <h1 class="bold text-5xl">{cityName}</h1>
       <div class="flex flex-row items-center justify-center text-4xl">
         {#if show}
-          <img class="w-20" src="{icon}" alt="i like elana" />
+          <img class="w-20" src={icon} alt="i like elana" />
         {/if}
         <h2>{temp}</h2>
       </div>
@@ -71,9 +80,6 @@
       <h3>{humid}</h3>
       <h3>{wind}</h3>
       <h3>{clouds}</h3>
-      {#if show}
-        <h3 class="pt-2">Data fetched at </h3>
-      {/if}
     </div>
   </div>
 </main>
